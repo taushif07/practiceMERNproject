@@ -1,0 +1,104 @@
+Q1> what is event loop in node js explain with visual examples and code.
+
+Ans:-
+ ┌───────────────────────────┐
+┌─>│           timers         │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+│  │     pending callbacks     │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+│  │       idle, prepare       │
+│  └─────────────┬─────────────┘      ┌───────────────┐
+│  ┌─────────────┴─────────────┐      │   incoming:   │
+│  │           poll            │<─────┤  connections, │
+│  └─────────────┬─────────────┘      │     data, etc. │
+│  ┌─────────────┴─────────────┐      └───────────────┘
+│  │           check           │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+└──┤    close callbacks    │
+   └───────────────────────────┘
+
+Each box represents a phase of the event loop. Each phase has a FIFO queue of callbacks to execute.
+ When the event loop enters a given phase, it will perform any operations specific to that phase,
+  then execute callbacks in that phase’s queue until the queue has been exhausted or the maximum number of callbacks has executed.
+   When the queue has been exhausted or the callback limit is reached, the event loop will move to the next phase, and so on.
+
+Here is an example of how the event loop works in code:
+
+const fs = require('fs');
+
+function someAsyncOperation(callback) {
+  // Assume this takes 95ms to complete
+  fs.readFile('/path/to/file', callback);
+}
+
+const timeoutScheduled = Date.now();
+
+setTimeout(() => {
+  const delay = Date.now() - timeoutScheduled;
+
+  console.log(`${delay}ms have passed since I was scheduled`);
+}, 100);
+
+// do someAsyncOperation which takes 95 ms to complete
+someAsyncOperation(() => {
+  const startCallback = Date.now();
+
+  // do something that will take 10ms...
+  while (Date.now() - startCallback < 10) {
+    // do nothing
+  }
+});
+
+In this example, someAsyncOperation takes 95ms to complete. The setTimeout is scheduled to run after 100ms.
+ However, because the callback of someAsyncOperation takes 10ms to complete, the setTimeout callback is delayed and runs after 105ms instead of 100ms.
+
+<<<<<<<<<<<<<<<<<<--------------------------------------------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+Q2> How does Node.js handle errors during event loop processing?
+
+Ans:--
+Node.js has several mechanisms for handling errors that occur during event loop processing. One of the most common ways to handle errors is by using error-first callbacks. This is a convention used in Node.js where the first argument to a callback function is an error object. If an error occurs during the execution of an asynchronous operation, 
+the error object will be populated with information about the error, 
+and the callback function can handle the error accordingly. Here’s an example:
+
+const fs = require('fs');
+
+fs.readFile('/path/to/file', (err, data) => {
+  if (err) {
+    // handle the error
+    console.error(err);
+  } else {
+    // use the data
+    console.log(data);
+  }
+});
+
+
+In this example, if an error occurs while reading the file,
+ the err object will be populated with information about the error,
+  and the callback function can handle it by logging it to the console.
+
+Another way to handle errors in Node.js is by using try...catch blocks.
+ This allows you to catch any synchronous errors that may occur during event loop processing. 
+ Here’s an example:
+
+ try {
+  // code that may throw an error
+  const result = someFunctionThatMayThrow();
+  console.log(result);
+} catch (err) {
+  // handle the error
+  console.error(err);
+}
+
+In this example, if an error is thrown while executing someFunctionThatMayThrow,
+ it will be caught by the catch block, and the error can be handled by logging it to the console.
+
+
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<--------------------------------------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+ 
