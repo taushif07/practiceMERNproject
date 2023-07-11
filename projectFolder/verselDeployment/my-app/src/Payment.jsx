@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import CheckoutProduct from './CheckoutProduct';
 import { useStateValue } from './StateProvider';
 import "./Payment.css";

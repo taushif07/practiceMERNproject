@@ -5,6 +5,7 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { Link } from "react-router-dom";
 import { useStateValue } from "./StateProvider";
 import { auth } from "./firebase";
+import gearbestlogo from "./logo/gearbestlogo.jpg"
 
 function Header() {
   const [{ basket, user }, dispatch] = useStateValue();
@@ -18,7 +19,7 @@ function Header() {
   return (
     <div className="header">
       <Link to="/">
-      <img className = "header__logo" src = "https://www.gearbest.com/u_file/2211/10/photo/logogearbest-5cd0.webp" />
+      <img className = "header__logo" src = {gearbestlogo} style={{height:"5rem",width:"5rem"}}/>
       </Link>
       <div className='header__search' >
         <input className='header__searchInput' type="text" />
